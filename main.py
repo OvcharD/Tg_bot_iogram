@@ -3,7 +3,6 @@ import random
 from aiogram.types import Message
 from aiogram.filters import Text, Command
 
-
 #Обработчик кнопки старт
 @user.user.dp.message(Command(commands=['start']))
 async def send_start_message(message : Message):
@@ -26,7 +25,7 @@ async def send_timer_message(message: Message):
                          reply_markup=keyboards.keyboard.keyboard_smoke_time)
     else:
 
-        await message.answer(f'Таймер уже запущен на {user.user.user_info[message.from_user.id]["time_for_minutes"]}\n\n'
+        await message.answer(f'Таймер уже запущен на {funkfunctions.funk.translate_for_hour(user.user.user_info[message.from_user.id]["time_for_seconds"])}\n\n' #поменять секунды на часы
                              f'Сбросить текуший и устаноить новый ?\n\n',
                              reply_markup=keyboards.keyboard.keyboard_yes_no)
 
@@ -48,13 +47,13 @@ async def reset_timer_message(message: Message):
 async def send_smoke_message(message : Message):
 
     if user.user.user_info[message.from_user.id]['timer'] == False:
-        await message.answer(random.choice(user.user.user_info[message.from_user.id]['positive_answer']),
+        await message.answer(random.choice(texts.text.answer_positive),
                          reply_markup=keyboards.keyboard.keyboard_timer_on)
 
         funkfunctions.funk.smoke_posutive(message)
         await funkfunctions.funk.restart_timer(message)
     else:
-        await message.answer(random.choice(user.user.user_info[message.from_user.id]['negative_answer']),
+        await message.answer(random.choice(texts.text.answer_negative),
                              reply_markup=keyboards.keyboard.keyboard_timer_on)
         funkfunctions.funk.smoke_negative(message)
         # запускаем таймер ожидания
