@@ -1,7 +1,13 @@
 import user, asyncio, time
 from aiogram.types import Message
+from aiogram.filters import BaseFilter
 
-
+#функция определения администратора
+class IsAdmin(BaseFilter):
+    def __init__(self, admin_list: list) -> None:
+        self.admin_list = user.user.admin_list
+    async def __call__(self, message : Message) -> bool:
+        return message.from_user.id in self.admin_list
 
 # фунция перевода введенного времени в секунды
 def translate_of_time(time: str) -> int:
@@ -25,7 +31,6 @@ def translate_for_hour(time:int) -> str:
         return '3 часа'
     elif time == (60 ** 2) * 4:
         return '4 часа'
-
 
 # Фунция повторения таймера -для случаев когда клиент покурил после таймера или во время таймера
 async def restart_timer(message: Message):
@@ -53,6 +58,9 @@ async def restart_timer(message: Message):
 def start_button(message):
     if message.from_user.id not in user.user.user_info:
         user.user.user_info[message.from_user.id] = {
+            'first_name':  message.from_user.first_name,
+            'last_name': message.from_user.last_name,
+            'user_name': message.from_user.username,
             'timer': False,
             'cigarettes_on_timer': 0,
             'cigarettes_off_timer': 0,
@@ -62,6 +70,7 @@ def start_button(message):
             'new_timer_on': False,
             'count_clock': 0
         }
+
 
 def add_new_timer_user_apdate(message):
     user.user.user_info[message.from_user.id]['timer'] = True  # устанавливаем флаг что таймер включен
@@ -102,3 +111,13 @@ def time_left(message):
     left_time = user.user.user_info[message.from_user.id]['finish_time'] - time.time()
     result = time.gmtime(left_time)
     return f'{result.tm_hour}:{result.tm_min}:{result.tm_sec}'
+
+#запрос количества пользователей
+def user_count():
+    return str(user.user.user_info.keys())
+
+def user_list():
+    list = []
+    for i in user.user.user_info:
+        list.append(user.user.user_info[i])
+    return str(list)

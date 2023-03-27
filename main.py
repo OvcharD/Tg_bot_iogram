@@ -3,6 +3,20 @@ import random
 from aiogram.types import Message
 from aiogram.filters import Text, Command
 
+#Обработчки комады администратора
+@user.user.dp.message(funkfunctions.funk.IsAdmin(user.user.admin_list) and Text(text=['admin']))
+async def send_message_admin(message: Message):
+    await message.answer('Меню админа',
+                         reply_markup=keyboards.keyboard.keyboard_admin)
+
+#Обработчки комады администратора
+@user.user.dp.message(funkfunctions.funk.IsAdmin(user.user.admin_list) and Text(text=['Статистика']))
+async def send_message_admin(message: Message):
+    await message.answer(f'Полная выгрузка \n\n{funkfunctions.funk.user_list()}\n\n'
+                         f'Ключи пользователей {funkfunctions.funk.user_count()}')
+
+
+
 #Обработчик кнопки старт
 @user.user.dp.message(Command(commands=['start']))
 async def send_start_message(message : Message):
@@ -19,13 +33,13 @@ async def send_info_message(message: Message):
 #Обработчик кнопки задать время
 @user.user.dp.message(Text(text = ['Установить таймер ⏲']))
 async def send_timer_message(message: Message):
-    print(user.user.user_info[message.from_user.id])
+
     if user.user.user_info[message.from_user.id]['timer'] == False :
         await message.answer(f'Выбери удобный переыв между сигаретами',
                          reply_markup=keyboards.keyboard.keyboard_smoke_time)
     else:
 
-        await message.answer(f'Таймер уже запущен на {funkfunctions.funk.translate_for_hour(user.user.user_info[message.from_user.id]["time_for_seconds"])}\n\n' #поменять секунды на часы
+        await message.answer(f'До конца таймера осталось {funkfunctions.funk.time_left(message)}\n\n'
                              f'Сбросить текуший и устаноить новый ?\n\n',
                              reply_markup=keyboards.keyboard.keyboard_yes_no)
 
